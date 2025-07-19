@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import User, { IUser } from '../models/User';
 
 // Extend Request interface to include user
 declare global {
@@ -16,59 +16,63 @@ declare global {
 }
 
 // Authentication middleware
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
+export const auth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message: 'Access denied. No token provided.',
       });
+      return;
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    
-    // Check if user still exists and is active
-    const user = await User.findById(decoded.userId);
-    if (!user || !user.isActive) {
-      return res.status(401).json({
+    const user = await User.findById(decoded.userId).select('-password') as IUser;
+
+    if (!user) {
+      res.status(401).json({
         success: false,
-        message: 'Invalid token or user not found.',
+        message: 'Token is not valid.',
       });
+      return;
     }
 
-    req.user = decoded;
+    req.user = {
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role,
+    };
+
     next();
   } catch (error) {
     res.status(401).json({
       success: false,
-      message: 'Invalid token.',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      message: 'Token is not valid.',
     });
   }
 };
 
 // Admin authentication middleware
-export const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const adminAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     // First run regular auth
     await auth(req, res, () => {});
 
-    // Check if user is admin
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({
+    if (!req.user || req.user.role !== 'admin') {
+      res.status(403).json({
         success: false,
-        message: 'Access denied. Admin privileges required.',
+        message: 'Access denied. Admin rights required.',
       });
+      return;
     }
 
     next();
   } catch (error) {
-    res.status(401).json({
+    res.status(403).json({
       success: false,
-      message: 'Authentication failed.',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      message: 'Access denied. Admin rights required.',
     });
   }
 };

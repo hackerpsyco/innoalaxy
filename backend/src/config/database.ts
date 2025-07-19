@@ -32,7 +32,7 @@ export const connectDB = async (): Promise<void> => {
     });
 
   } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message);
+    console.error('❌ MongoDB connection failed:', error instanceof Error ? error.message : 'Unknown error');
     console.log('⚠️ Continuing without database - some features may not work');
     // Don't exit the process, allow the server to start without DB
   }

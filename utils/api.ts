@@ -1,4 +1,14 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+import Constants from 'expo-constants';
+
+// Get API base URL from environment variables with fallback
+const getApiBaseUrl = () => {
+  const envApiUrl = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_BASE_URL || 
+                   process.env.EXPO_PUBLIC_API_BASE_URL ||
+                   'http://localhost:5000';
+  return `${envApiUrl}/api`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 // API utility functions
 export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
