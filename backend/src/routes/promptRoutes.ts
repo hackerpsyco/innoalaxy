@@ -57,7 +57,7 @@ router.get('/', async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching prompts',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -86,7 +86,7 @@ router.get('/daily', async (req, res) => {
       data: dailyPrompts,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching daily prompts',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -106,7 +106,7 @@ router.get('/popular', async (req, res) => {
       data: prompts,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching popular prompts',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -124,7 +124,7 @@ router.get('/tools', async (req, res) => {
       data: tools,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching tools',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -149,7 +149,7 @@ router.get('/:id', async (req, res) => {
       data: prompt,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching prompt',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -179,7 +179,7 @@ router.post('/:id/use', async (req, res) => {
       message: 'Usage tracked successfully',
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error tracking usage',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -193,13 +193,13 @@ router.post('/', adminAuth, validatePrompt, async (req, res) => {
     const prompt = new Prompt(req.body);
     await prompt.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: prompt,
       message: 'Prompt created successfully',
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error creating prompt',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -229,7 +229,7 @@ router.put('/:id', adminAuth, validatePrompt, async (req, res) => {
       message: 'Prompt updated successfully',
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error updating prompt',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -262,7 +262,7 @@ router.put('/daily/rotate', adminAuth, async (req, res) => {
       data: newDailyPrompts,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error rotating daily prompts',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -287,7 +287,7 @@ router.delete('/:id', adminAuth, async (req, res) => {
       message: 'Prompt deleted successfully',
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error deleting prompt',
       error: error instanceof Error ? error.message : 'Unknown error',

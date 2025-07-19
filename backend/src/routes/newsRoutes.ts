@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching news',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -77,7 +77,7 @@ router.get('/latest', async (req, res) => {
       data: news,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching latest news',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -95,7 +95,7 @@ router.get('/sources', async (req, res) => {
       data: sources,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching news sources',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -120,7 +120,7 @@ router.get('/:id', async (req, res) => {
       data: news,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching news article',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -134,13 +134,13 @@ router.post('/', adminAuth, validateNews, async (req, res) => {
     const news = new News(req.body);
     await news.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: news,
       message: 'News article created successfully',
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error creating news article',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -170,7 +170,7 @@ router.put('/:id', adminAuth, validateNews, async (req, res) => {
       message: 'News article updated successfully',
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error updating news article',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -195,7 +195,7 @@ router.delete('/:id', adminAuth, async (req, res) => {
       message: 'News article deleted successfully',
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error deleting news article',
       error: error instanceof Error ? error.message : 'Unknown error',

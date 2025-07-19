@@ -33,9 +33,9 @@ router.post('/register', validateUser, async (req, res) => {
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    delete (userResponse as any).password;
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         user: userResponse,
@@ -44,7 +44,7 @@ router.post('/register', validateUser, async (req, res) => {
       message: 'User registered successfully',
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error registering user',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -96,7 +96,7 @@ router.post('/login', validateLogin, async (req, res) => {
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    delete (userResponse as any).password;
 
     res.json({
       success: true,
@@ -107,7 +107,7 @@ router.post('/login', validateLogin, async (req, res) => {
       message: 'Login successful',
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error logging in',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -132,7 +132,7 @@ router.get('/profile', auth, async (req, res) => {
       data: user,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching profile',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -164,7 +164,7 @@ router.put('/profile', auth, async (req, res) => {
       message: 'Profile updated successfully',
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error updating profile',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -218,7 +218,7 @@ router.put('/change-password', auth, async (req, res) => {
       message: 'Password changed successfully',
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error changing password',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -265,7 +265,7 @@ router.get('/', adminAuth, async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching users',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -304,7 +304,7 @@ router.put('/:id/role', adminAuth, async (req, res) => {
       message: 'User role updated successfully',
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error updating user role',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -333,7 +333,7 @@ router.put('/:id/status', adminAuth, async (req, res) => {
       message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error updating user status',
       error: error instanceof Error ? error.message : 'Unknown error',

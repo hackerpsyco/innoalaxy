@@ -41,7 +41,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({
+    return res.status(401).json({
       success: false,
       message: 'Invalid token.',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -65,7 +65,7 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
 
     next();
   } catch (error) {
-    res.status(401).json({
+    return res.status(401).json({
       success: false,
       message: 'Authentication failed.',
       error: error instanceof Error ? error.message : 'Unknown error',

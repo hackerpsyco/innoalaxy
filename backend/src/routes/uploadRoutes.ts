@@ -101,7 +101,7 @@ router.post('/json', adminAuth, upload.single('jsonFile'), async (req, res) => {
       fs.unlinkSync(req.file.path);
     }
 
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error processing JSON file',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -133,7 +133,7 @@ router.post('/image', adminAuth, upload.single('image'), async (req, res) => {
     });
 
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error uploading image',
       error: error instanceof Error ? error.message : 'Unknown error',

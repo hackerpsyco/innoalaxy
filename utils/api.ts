@@ -22,7 +22,7 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
     console.log('API response:', data);
     return data;
   } catch (error) {
-    console.error('API request failed:', error.message);
+    console.error('API request failed:', error instanceof Error ? error.message : 'Unknown error');
     // Return fallback data structure
     return {
       success: false,

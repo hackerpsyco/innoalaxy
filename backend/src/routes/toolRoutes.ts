@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching tools',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -72,7 +72,7 @@ router.get('/featured', async (req, res) => {
       data: tools,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching featured tools',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -100,7 +100,7 @@ router.get('/categories', async (req, res) => {
       data: categories,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching categories',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -125,7 +125,7 @@ router.get('/:id', async (req, res) => {
       data: tool,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching tool',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -139,13 +139,13 @@ router.post('/', adminAuth, validateTool, async (req, res) => {
     const tool = new Tool(req.body);
     await tool.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: tool,
       message: 'Tool created successfully',
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error creating tool',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -175,7 +175,7 @@ router.put('/:id', adminAuth, validateTool, async (req, res) => {
       message: 'Tool updated successfully',
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: 'Error updating tool',
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -200,7 +200,7 @@ router.delete('/:id', adminAuth, async (req, res) => {
       message: 'Tool deleted successfully',
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error deleting tool',
       error: error instanceof Error ? error.message : 'Unknown error',
