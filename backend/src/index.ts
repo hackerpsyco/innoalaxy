@@ -12,6 +12,7 @@ import promptRoutes from './routes/promptRoutes';
 import newsRoutes from './routes/newsRoutes';
 import userRoutes from './routes/userRoutes';
 import uploadRoutes from './routes/uploadRoutes';
+import apkRoutes from './routes/apkRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 // Load environment variables
@@ -65,6 +66,7 @@ app.use('/api/prompts', promptRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/apk', apkRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -78,6 +80,7 @@ app.get('/', (req, res) => {
       news: '/api/news',
       users: '/api/users',
       upload: '/api/upload',
+      apk: '/api/apk',
     },
   });
 });
