@@ -1,66 +1,40 @@
 import { Request, Response, NextFunction } from 'express';
 
+export interface AppError extends Error {
+  statusCode?: number;
+  isOperational?: boolean;
+}
+
 export const errorHandler = (
-  error: Error,
+  err: AppError,
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  console.error('Error:', error);
+): void => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
 
-  // Mongoose validation error
-  if (error.name === 'ValidationError') {
-    const errors = Object.values((error as any).errors).map((err: any) => err.message);
-    return res.status(400).json({
-      success: false,
-      message: 'Validation Error',
-      errors,
-    });
-  }
+  console.error(`Error ${statusCode}: ${message}`);
+  console.error(err.stack);
 
-  // Mongoose duplicate key error
-  if ((error as any).code === 11000) {
-    const field = Object.keys((error as any).keyValue)[0];
-    return res.status(400).json({
-      success: false,
-      message: `${field} already exists`,
-    });
-  }
-
-  // JWT errors
-  if (error.name === 'JsonWebTokenError') {
-    return res.status(401).json({
-      success: false,
-      message: 'Invalid token',
-    });
-  }
-
-  if (error.name === 'TokenExpiredError') {
-    return res.status(401).json({
-      success: false,
-      message: 'Token expired',
-    });
-  }
-
-  // Multer errors
-  if (error.message.includes('File too large')) {
-    return res.status(400).json({
-      success: false,
-      message: 'File size too large',
-    });
-  }
-
-  if (error.message.includes('Only JSON and image files are allowed')) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid file type. Only JSON and image files are allowed',
-    });
-  }
-
-  // Default error
-  res.status(500).json({
+  res.status(statusCode).json({
     success: false,
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
+    error: {
+      message,
+      status: statusCode,
+      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    },
   });
+};
+
+export const notFound = (req: Request, res: Response, next: NextFunction): void => {
+  const error = new Error(`Not found - ${req.originalUrl}`) as AppError;
+  error.statusCode = 404;
+  next(error);
+};
+
+export const asyncHandler = (fn: Function) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
 };
