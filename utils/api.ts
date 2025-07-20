@@ -1,17 +1,28 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+import { Platform } from 'react-native';
+import { config } from './config';
+import { aiToolsData } from '@/data/aiToolsData';
 
-// API utility functions
+const API_BASE_URL = config.API_BASE_URL;
+
+// API utility functions with offline support
 export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), config.TIMEOUTS.REQUEST);
+
   try {
     console.log(`Making API request to: ${API_BASE_URL}${endpoint}`);
+    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
       mode: 'cors',
+      signal: controller.signal,
       ...options,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       console.error(`API request failed with status: ${response.status}`);
@@ -19,16 +30,30 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
     }
 
     const data = await response.json();
-    console.log('API response:', data);
+    console.log('API response success:', data);
     return data;
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error('API request failed:', error.message);
-    // Return fallback data structure
+    
+    // Return fallback data for tools when API fails
+    if (endpoint.includes('/tools') && config.FEATURES.OFFLINE_MODE) {
+      console.log('Using offline fallback data');
+      return {
+        success: true,
+        data: aiToolsData,
+        error: null,
+        fallback: true,
+        offline: true
+      };
+    }
+    
     return {
       success: false,
       data: [],
       error: error instanceof Error ? error.message : 'Unknown error',
-      fallback: true
+      fallback: true,
+      offline: true
     };
   }
 };

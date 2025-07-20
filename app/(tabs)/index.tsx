@@ -51,11 +51,16 @@ export default function HomeScreen() {
     setLoading(true);
     try {
       const response = await toolsApi.getAll();
-      if (response.success && response.data) {
+      if (response.success && response.data && response.data.length > 0) {
         setTools(response.data);
+        console.log(`Loaded ${response.data.length} tools from API`);
+      } else if (response.offline || response.fallback) {
+        // API failed, using offline data
+        console.log('API unavailable, using offline data');
+        setTools(aiToolsData);
       } else {
-        // Fallback to local data if API fails
-        console.log('Using fallback data');
+        // Unexpected response format
+        console.log('Unexpected API response, using fallback data');
         setTools(aiToolsData);
       }
     } catch (error) {

@@ -36,9 +36,13 @@ app.use('/api/', limiter);
 
 // CORS configuration
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://localhost:8081', 'http://localhost:8081'],
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://innoalaxy.com', 'https://www.innoalaxy.com'] // Replace with your production domains
+    : true, // Allow all origins in development
   credentials: true,
   optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
 };
 app.use(cors(corsOptions));
 
